@@ -1,0 +1,40 @@
+[package]
+name = "ttt"
+version = "0.1.0"
+authors = ["Matthew Li <matthew.li10@education.nsw.gov.au>"]
+edition = "2021"
+license = "MIT OR Apache-2.0"
+
+[[bin]]
+name = "ttt"
+test = false
+bench = false
+
+[dependencies]
+panic-halt = "1.0.0"
+ufmt = "0.2.0"
+nb = "1.1.0"
+embedded-hal = "1.0"
+bytemuck = "1.19.0"
+avr-device = { version = "0.5.4", features = ["atmega328p"] }
+itertools = { version = "0.13.0", default-features = false }
+arduino-hal = { git = "https://github.com/rahix/avr-hal", features = [
+    "arduino-nano",
+] }
+avr-hal-generic = { git = "https://github.com/rahix/avr-hal" }
+
+[build-dependencies]
+proc-macro2 = "1.0.89"
+
+[profile.dev]
+panic = "abort"
+lto = true
+opt-level = "s"
+
+[profile.release]
+panic = "abort"
+codegen-units = 1
+debug = true
+lto = true
+strip = true
+opt-level = "s"

@@ -1,0 +1,4 @@
+[wokwi]
+version = 1
+firmware = 'out/ttt.hex'
+elf = 'target/avr-atmega328p/release/ttt.elf'
