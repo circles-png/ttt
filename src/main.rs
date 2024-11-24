@@ -111,7 +111,7 @@ impl Game {
             blue_columns: p!(into_output, d2, d4, d6),
             red_columns: p!(into_output, d3, d5, d7),
             led_rows: p!(into_opendrain, d8, d9, d10),
-            button_columns: p!(into_pull_up_input, d11, d12, d13),
+            button_columns: p!(into_pull_up_input, d11, d12, a3),
             button_rows: p!(into_opendrain, a0, a1, a2),
         }
     }

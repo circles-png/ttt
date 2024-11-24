@@ -2029,10 +2029,6 @@
 		(uuid "c0433d02-e2cd-451c-bc7b-90ff722380b0")
 	)
 	(no_connect
-		(at 212.09 102.87)
-		(uuid "cba90a32-0d08-4e1e-970f-962466021b02")
-	)
-	(no_connect
 		(at 212.09 110.49)
 		(uuid "d789cdc1-5b81-44b4-8a70-99e82bd39e8f")
 	)
@@ -2055,6 +2051,10 @@
 	(no_connect
 		(at 212.09 80.01)
 		(uuid "ec936558-8c14-408e-917c-dba4207c3bb9")
+	)
+	(no_connect
+		(at 186.69 113.03)
+		(uuid "f880fd26-7e67-4a62-90fc-9bfa4b2c9bb0")
 	)
 	(wire
 		(pts
@@ -3238,7 +3238,7 @@
 	)
 	(wire
 		(pts
-			(xy 180.34 113.03) (xy 186.69 113.03)
+			(xy 218.44 102.87) (xy 212.09 102.87)
 		)
 		(stroke
 			(width 0)
@@ -3391,13 +3391,13 @@
 		(uuid "1c6fd659-e299-4a3a-bd6d-83b40ba2e96b")
 	)
 	(label "C3"
-		(at 180.34 113.03 0)
+		(at 218.44 102.87 180)
 		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
 			)
-			(justify left bottom)
+			(justify right bottom)
 		)
 		(uuid "2b618145-1d0f-4402-9547-dcb6439e895a")
 	)
