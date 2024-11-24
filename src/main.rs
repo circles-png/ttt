@@ -1,83 +1,24 @@
-#![feature(random, abi_avr_interrupt, array_chunks)]
+#![feature(abi_avr_interrupt, array_chunks)]
 #![no_std]
 #![no_main]
 
 use core::{
     array::from_fn,
     convert::{identity, Into},
-    random::{Random, RandomSource},
 };
 
 use arduino_hal::{
-    adc::{AdcOps, AdcSettings},
+    adc::AdcSettings,
     hal::port::Dynamic,
-    pac::{adc::admux::MUX_A, PORTC},
     pins,
     port::mode::{Input, OpenDrain, Output, PullUp},
-    Peripherals,
+    Adc, Peripherals,
 };
 use avr_hal_generic::{hal_v0::digital::v2::OutputPin, port::Pin};
 use itertools::Itertools;
 use millis::{init, millis};
 use panic_halt as _;
 mod millis;
-
-fn random<T: Random>(source: &mut (impl RandomSource + ?Sized)) -> T {
-    T::random(source)
-}
-
-struct NanoRandom([u64; 2]);
-
-impl NanoRandom {
-    fn new<H, A>(adc: &mut A) -> Self
-    where
-        A: AdcOps<H, Settings = AdcSettings, Channel = MUX_A>,
-    {
-        let mut last = None;
-
-        Self(from_fn(|_| {
-            u64::from_be_bytes(from_fn(|_| {
-                let byte = {
-                    adc.raw_enable_channel(MUX_A::ADC5);
-                    unsafe {
-                        (*PORTC::PTR).ddrc.write(|w| w.pc5().clear_bit());
-                        (*PORTC::PTR).portc.write(|w| w.pc5().clear_bit());
-                    };
-                    adc.raw_set_channel(MUX_A::ADC5);
-                    adc.raw_start_conversion();
-                    while adc.raw_is_converting() {}
-                    adc.raw_read_adc().to_be_bytes()[1]
-                };
-                let byte = last.map_or(byte, |last| byte ^ last);
-                last = Some(byte);
-                byte
-            }))
-        }))
-    }
-
-    fn next(&mut self) -> u64 {
-        let first = self.0[0];
-        let mut second = self.0[1];
-        let result = first.wrapping_add(second);
-
-        second ^= first;
-        self.0[0] = first.rotate_left(55) ^ second ^ (second << 14);
-        self.0[1] = second.rotate_left(36);
-
-        result
-    }
-}
-
-impl RandomSource for NanoRandom {
-    fn fill_bytes(&mut self, bytes: &mut [u8]) {
-        for byte in bytes {
-            #[allow(clippy::cast_possible_truncation)]
-            {
-                *byte = self.next() as u8;
-            }
-        }
-    }
-}
 
 struct Game {
     board: Board,
@@ -93,16 +34,22 @@ struct Game {
 
 impl Game {
     fn new() -> Self {
-        let mut peripherals = Peripherals::take().unwrap();
+        let peripherals = Peripherals::take().unwrap();
         let pins = pins!(peripherals);
-        let mut nano_random = NanoRandom::new(&mut peripherals.ADC);
         init(&peripherals.TC0);
         macro_rules! p {
             ($mode:ident, $($pins:ident),+) => {
                 [$(pins.$pins.$mode().downgrade()),+]
             };
         }
-        let current_player = random(&mut nano_random);
+        let current_player = {
+            let mut adc = Adc::new(peripherals.ADC, AdcSettings::default());
+            if pins.a5.into_analog_input(&mut adc).analog_read(&mut adc) & 1 == 0 {
+                Player::Red
+            } else {
+                Player::Blue
+            }
+        };
         Self {
             board: [[None; 3]; 3],
             current_player,
@@ -235,16 +182,6 @@ impl Game {
 enum Player {
     Red,
     Blue,
-}
-
-impl Random for Player {
-    fn random(source: &mut (impl RandomSource + ?Sized)) -> Self {
-        if random(source) {
-            Self::Red
-        } else {
-            Self::Blue
-        }
-    }
 }
 
 impl Player {
