@@ -1,6 +1,6 @@
 use arduino_hal::{
     hal::port::Dynamic,
-    port::mode::{Input, OpenDrain, PullUp},
+    port::mode::{Input, OpenDrain, PullUp}, prelude::_unwrap_infallible_UnwrapInfallible,
 };
 use avr_hal_generic::{hal_v0::digital::v2::OutputPin, port::Pin};
 use core::{array::from_fn, convert::identity};
@@ -37,7 +37,7 @@ impl Buttons {
     pub fn scan(&mut self) -> ButtonScan {
         ButtonScan(from_fn(identity).map(|y| {
             for (index, other) in self.rows.iter_mut().enumerate() {
-                other.set_state((index != y).into()).unwrap();
+                other.set_state((index != y).into()).unwrap_infallible();
             }
             self.columns.each_ref().map(<Pin<Input<_>, _>>::is_low)
         }))

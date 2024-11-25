@@ -116,7 +116,7 @@ impl Display {
             .iter_mut()
             .zip(from_fn::<_, SIZE, _>(|index| index == y))
         {
-            row.set_state((!active).into()).unwrap();
+            row.set_state((!active).into()).unwrap_infallible();
         }
         let row = &self.buffer[y];
         for (x, pixel) in row.iter().enumerate() {
