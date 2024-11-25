@@ -15,7 +15,7 @@ panic-halt = "1.0.0"
 ufmt = "0.2.0"
 nb = "1.1.0"
 embedded-hal = "1.0"
-bytemuck = "1.19.0"
+bytemuck = "1.20.0"
 avr-device = { version = "0.5.4", features = ["atmega328p"] }
 itertools = { version = "0.13.0", default-features = false }
 arduino-hal = { git = "https://github.com/rahix/avr-hal", features = [
@@ -24,7 +24,7 @@ arduino-hal = { git = "https://github.com/rahix/avr-hal", features = [
 avr-hal-generic = { git = "https://github.com/rahix/avr-hal" }
 
 [build-dependencies]
-proc-macro2 = "1.0.89"
+proc-macro2 = "1.0.92"
 
 [profile.dev]
 panic = "abort"
